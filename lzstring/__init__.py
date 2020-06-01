@@ -50,10 +50,7 @@ def _compress(uncompressed, bitsPerChar, getCharFromInt):
     context_data_position = 0
 
     for ii in range(len(uncompressed)):
-        if isinstance(uncompressed, (bytes)):
-            context_c = chr(uncompressed[ii])
-        else:
-            context_c = uncompressed[ii]
+        context_c = uncompressed[ii]
         if context_c not in context_dictionary:
             context_dictionary[context_c] = context_dictSize
             context_dictSize += 1
@@ -377,11 +374,6 @@ class LZString(object):
         return _compress(uncompressed, 16, chr)
 
     @staticmethod
-    def compressToUint8Array(uncompressed):
-        return bytes([ord(x) for x in _compress(uncompressed, 8, chr)])
-
-
-    @staticmethod
     def compressToUTF16(uncompressed):
         if uncompressed is None:
             return ""
@@ -413,20 +405,12 @@ class LZString(object):
         return _decompress(len(compressed), 32768, lambda index: ord(compressed[index]))
 
     @staticmethod
-    def decompressFromUint8Array(compressed):
-        if compressed is None:
-            return ""
-        if compressed == "":
-            return None
-        return _decompress(len(compressed), 128, lambda index: compressed[index])
-
-    @staticmethod
     def decompressFromUTF16(compressed):
         if compressed is None:
             return ""
         if compressed == "":
             return None
-        return _decompress(len(compressed), 16384, lambda index: compressed[index] - 32)
+        return _decompress(len(compressed), 16384, lambda index: ord(compressed[index]) - 32)
 
     @staticmethod
     def decompressFromBase64(compressed):
